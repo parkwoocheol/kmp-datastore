@@ -20,6 +20,20 @@
 - Android SDK for Android sample builds
 - Xcode + Command Line Tools for iOS sample builds
 
+## 🧪 Testing
+
+The library includes a comprehensive test suite with 68+ unit tests covering:
+
+- **Core API Tests**: Primitive and object storage operations
+- **Serialization Tests**: Encoding/decoding with error handling
+- **Query Tests**: Key-based and value-based query operations
+- **Integration Tests**: End-to-end scenarios
+
+Run tests:
+```bash
+./gradlew :kmp-datastore:test
+```
+
 ## 📦 Installation
 
 Add the repository and dependency to your `build.gradle.kts`:
