@@ -58,7 +58,7 @@ publishing {
     publications {
         withType<MavenPublication> {
             groupId = "com.github.parkwoocheol"
-            version = "1.0.0"
+            version = project.version.toString()
 
             pom {
                 name.set("KMP DataStore Annotations")

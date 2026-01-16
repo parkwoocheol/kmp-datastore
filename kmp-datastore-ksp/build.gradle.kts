@@ -26,7 +26,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.github.parkwoocheol"
             artifactId = "kmp-datastore-ksp"
-            version = "1.0.0"
+            version = project.version.toString()
             from(components["java"])
 
             pom {

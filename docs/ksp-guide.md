@@ -18,10 +18,10 @@ plugins {
 ```kotlin
 dependencies {
     // Annotations module (required for KSP)
-    implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore-annotations:1.0.0")
+    implementation("com.github.parkwoocheol:kmp-datastore-annotations:<version>")
     
     // KSP processor
-    ksp("com.github.parkwoocheol.kmp-datastore:kmp-datastore-ksp:1.0.0")
+    ksp("com.github.parkwoocheol:kmp-datastore-ksp:<version>")
 }
 ```
 
@@ -209,11 +209,11 @@ if (result.isFailure) {
 ## Query Methods by Type
 
 | Property Type | Generated Methods |
-|--------------|-------------------|
-| `Int`, `Long`, `Float`, `Double` | `whereXxxEquals`, `whereXxxBetween`, `whereXxxGreaterThan` |
-| `String` | `whereXxxEquals`, `whereXxxContains`, `whereXxxStartsWith` |
-| `Boolean` | `whereXxxEquals` |
-| Other types | `whereXxxEquals` |
+| :--- | :--- |
+| `Int`, `Long`, `Float`, `Double` | `where{Property}Equals`, `where{Property}Between`, `where{Property}GreaterThan` |
+| `String` | `where{Property}Equals`, `where{Property}Contains`, `where{Property}StartsWith` |
+| `Boolean` | `where{Property}Equals` |
+| Other types | `where{Property}Equals` |
 
 ## Best Practices
 

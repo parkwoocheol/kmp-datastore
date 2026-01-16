@@ -11,7 +11,7 @@ plugins {
 
 // Configuration for JitPack publishing
 group = "com.github.parkwoocheol"
-version = "0.1.0"
+version = System.getenv("KMP_DATASTORE_VERSION") ?: "1.0.0"
 
 allprojects {
     apply(plugin = "com.diffplug.spotless")

@@ -6,7 +6,7 @@ KMP DataStore provides a comprehensive annotation system for enhanced type safet
 
 ```kotlin
 // build.gradle.kts (commonMain)
-implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore-annotations:1.0.0")
+implementation("com.github.parkwoocheol:kmp-datastore-annotations:<version>")
 ```
 
 ## Available Annotations

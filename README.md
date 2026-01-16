@@ -24,7 +24,13 @@
 
 ## 📦 Installation
 
-Add the repository and dependency to your `build.gradle.kts`:
+This library is available via **JitPack** (for Android/Desktop) and **GitHub Packages** (for iOS/multiplatform).
+
+### Method 1: Basic Setup (Groovy/Kotlin DSL)
+
+Use the `<version>` placeholder with the latest release version (e.g. `1.0.0`). Check the badge above for the latest version.
+
+#### Core Library (Required)
 
 ```kotlin
 // settings.gradle.kts
@@ -34,23 +40,59 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-```
 
-### Core Library (Required)
-
-```kotlin
 // build.gradle.kts (commonMain)
-implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore:1.0.0")
+implementation("com.github.parkwoocheol:kmp-datastore:<version>")
 
 // Optional: for Kotlinx Serialization support
 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+```
+
+### Method 2: Version Catalog (libs.versions.toml)
+
+For modern projects, add the following to your `libs.versions.toml`:
+
+```toml
+[versions]
+kmpDatastore = "<version>" # e.g. 1.0.0
+
+[libraries]
+kmp-datastore = { module = "com.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
+kmp-datastore-annotations = { module = "com.github.parkwoocheol:kmp-datastore-annotations", version.ref = "kmpDatastore" }
+kmp-datastore-ksp = { module = "com.github.parkwoocheol:kmp-datastore-ksp", version.ref = "kmpDatastore" }
+```
+
+Then use it in your `build.gradle.kts`:
+
+```kotlin
+implementation(libs.kmp.datastore)
+```
+
+### iOS Setup (GitHub Packages)
+
+For iOS targets (or if JitPack causes issues), usage of **GitHub Packages** is recommended.
+
+1. Create a Personal Access Token (PAT) with `read:packages` scope on GitHub.
+2. Add the following to your `settings.gradle.kts` (or `~/.gradle/gradle.properties`):
+
+```kotlin
+// settings.gradle.kts
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/parkwoocheol/kmp-datastore")
+        credentials {
+            username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
+            password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
 ```
 
 ### Annotations (Optional)
 
 ```kotlin
 // For annotation support (runtime validation, @RequiresSerializer warnings)
-implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore-annotations:1.0.0")
+implementation("com.github.parkwoocheol:kmp-datastore-annotations:<version>")
 ```
 
 ### KSP Code Generation (Optional)
@@ -61,7 +103,7 @@ plugins {
 }
 
 dependencies {
-    ksp("com.github.parkwoocheol.kmp-datastore:kmp-datastore-ksp:1.0.0")
+    ksp("com.github.parkwoocheol:kmp-datastore-ksp:<version>")
 }
 ```
 
