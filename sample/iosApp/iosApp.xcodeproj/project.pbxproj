@@ -89,7 +89,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 29DCA9F0B3A40325067EB163 /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
-				0713DBE5ED75E351FAC728C7 /* Build KMP Shared Framework */,
 				297B59D9CE634556D6007C40 /* Sources */,
 				EF8A6E9BFD470986D9D5C9B5 /* Frameworks */,
 				DB76241340C08196BD9C492C /* Embed Frameworks */,
@@ -132,27 +131,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		0713DBE5ED75E351FAC728C7 /* Build KMP Shared Framework */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Build KMP Shared Framework";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -f ~/.zshrc ]; then\n    source ~/.zshrc\nelif [ -f ~/.bash_profile ]; then\n    source ~/.bash_profile\nfi\n\nif [ -z \"$JAVA_HOME\" ]; then\n    export JAVA_HOME=$(/usr/libexec/java_home)\nfi\n\ncd \"$SRCROOT/../../\"\n./gradlew :sample:shared:linkDebugFrameworkIosSimulatorArm64\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		297B59D9CE634556D6007C40 /* Sources */ = {
@@ -290,7 +268,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../sample/shared/build/bin/iosSimulatorArm64/debugFramework",
+					"$(inherited)",
+					"$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/debugFramework",
 					"\"../shared/build/bin/iosSimulatorArm64/debugFramework\"",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -299,7 +278,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Shared,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parkwoocheol.sample.kmpdatastore;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -312,7 +295,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../sample/shared/build/bin/iosSimulatorArm64/debugFramework",
+					"$(inherited)",
+					"$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/debugFramework",
 					"\"../shared/build/bin/iosSimulatorArm64/debugFramework\"",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -321,7 +305,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Shared,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parkwoocheol.sample.kmpdatastore;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

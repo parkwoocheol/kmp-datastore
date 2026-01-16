@@ -29,14 +29,16 @@ actual class PreferencesDataStore actual constructor(name: String) {
     private val dataStore: DataStore<Preferences> =
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
-                val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
-                    directory = NSDocumentDirectory,
-                    inDomain = NSUserDomainMask,
-                    appropriateForURL = null,
-                    create = true,
-                    error = null,
-                )
-                val path = requireNotNull(documentDirectory).path + "/$name.preferences_pb"
+                val documentDirectory =
+                    NSFileManager.defaultManager.URLForDirectory(
+                        directory = NSDocumentDirectory,
+                        inDomain = NSUserDomainMask,
+                        appropriateForURL = null,
+                        create = true,
+                        error = null,
+                    )
+                val dir = documentDirectory ?: throw IllegalStateException("Failed to obtain document directory path for DataStore.")
+                val path = dir.path + "/$name.preferences_pb"
                 path.toPath()
             },
         )

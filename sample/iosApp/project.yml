@@ -8,26 +8,17 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: iosApp
+
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.parkwoocheol.sample.kmpdatastore
       INFOPLIST_FILE: iosApp/Info.plist
-      FRAMEWORK_SEARCH_PATHS: "$(SRCROOT)/../../sample/shared/build/bin/iosSimulatorArm64/debugFramework"
-      OTHER_LDFLAGS: "$(inherited) -framework Shared"
-    preBuildScripts:
-      - name: Build KMP Shared Framework
-        script: |
-          if [ -f ~/.zshrc ]; then
-              source ~/.zshrc
-          elif [ -f ~/.bash_profile ]; then
-              source ~/.bash_profile
-          fi
-          
-          if [ -z "$JAVA_HOME" ]; then
-              export JAVA_HOME=$(/usr/libexec/java_home)
-          fi
-
-          cd "$SRCROOT/../../"
-          ./gradlew :sample:shared:linkDebugFrameworkIosSimulatorArm64
+      FRAMEWORK_SEARCH_PATHS:
+        - $(inherited)
+        - $(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/debugFramework
+      OTHER_LDFLAGS:
+        - $(inherited)
+        - -framework
+        - Shared
     dependencies:
-       - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework
-         embed: true
+      - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework
+        embed: true

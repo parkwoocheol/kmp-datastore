@@ -344,14 +344,15 @@ class DataStoreValueQuery<T : Any>(
                 ?: throw IllegalStateException(
                     "Value comparator is required for value sorting.",
                 )
-        val pairComparator = Comparator<QueryEntry<T>> { a, b ->
-            val result = comparator.compare(a.value, b.value)
-            if (result != 0) {
-                result
-            } else {
-                a.key.compareTo(b.key)
+        val pairComparator =
+            Comparator<QueryEntry<T>> { a, b ->
+                val result = comparator.compare(a.value, b.value)
+                if (result != 0) {
+                    result
+                } else {
+                    a.key.compareTo(b.key)
+                }
             }
-        }
         return if (ascending) pairComparator else pairComparator.reversed()
     }
 }
@@ -485,9 +486,7 @@ fun TypeSafeDataStore.groupByKey(keySelector: (String) -> String): Flow<Map<Stri
 /**
  * Filters keys by value content with automatic type inference.
  */
-inline fun <reified T : Any> TypeSafeDataStore.filterByValue(
-    noinline predicate: (key: String, value: T) -> Boolean,
-): Flow<Set<String>> {
+inline fun <reified T : Any> TypeSafeDataStore.filterByValue(noinline predicate: (key: String, value: T) -> Boolean): Flow<Set<String>> {
     return queryValues<T>()
         .filterValue(predicate)
         .executeKeys()
@@ -615,7 +614,8 @@ internal fun kotlin.reflect.KType.isPrimitiveType(): Boolean {
         Long::class,
         Float::class,
         Double::class,
-        Boolean::class -> true
+        Boolean::class,
+        -> true
         else -> false
     }
 }

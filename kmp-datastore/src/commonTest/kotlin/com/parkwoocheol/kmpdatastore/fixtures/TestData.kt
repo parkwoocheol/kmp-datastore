@@ -38,18 +38,25 @@ class MockDataStoreSerializer : DataStoreSerializer {
     val encodeHistory = mutableListOf<Pair<Any?, KType>>()
     val decodeHistory = mutableListOf<Pair<String, KType>>()
 
-    private val json = Json {
-        prettyPrint = false
-        isLenient = true
-    }
+    private val json =
+        Json {
+            prettyPrint = false
+            isLenient = true
+        }
 
-    override fun encode(data: Any?, type: KType): String {
+    override fun encode(
+        data: Any?,
+        type: KType,
+    ): String {
         encodeHistory.add(data to type)
         return json.encodeToString(serializer(type), data)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> decode(json: String, type: KType): T {
+    override fun <T> decode(
+        json: String,
+        type: KType,
+    ): T {
         decodeHistory.add(json to type)
         return this.json.decodeFromString(serializer(type), json) as T
     }

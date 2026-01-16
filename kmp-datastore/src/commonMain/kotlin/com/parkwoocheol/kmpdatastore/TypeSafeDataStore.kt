@@ -1,5 +1,6 @@
 package com.parkwoocheol.kmpdatastore
 
+import com.parkwoocheol.kmpdatastore.annotations.RequiresSerializer
 import com.parkwoocheol.kmpdatastore.platform.PreferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -199,6 +200,7 @@ class TypeSafeDataStore(
      * @throws SerializationException if serialization fails
      */
     @OptIn(ExperimentalStdlibApi::class)
+    @RequiresSerializer
     suspend inline fun <reified T : Any> put(
         key: String,
         value: T,
@@ -244,6 +246,7 @@ class TypeSafeDataStore(
      * @throws SerializationException if deserialization fails
      */
     @OptIn(ExperimentalStdlibApi::class)
+    @RequiresSerializer
     inline fun <reified T : Any> get(key: String): Flow<T?> {
         val s =
             serializer ?: throw IllegalStateException(

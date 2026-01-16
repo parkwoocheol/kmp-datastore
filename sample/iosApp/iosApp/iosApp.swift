@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct iosApp: App {
+struct KMPDataStoreApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

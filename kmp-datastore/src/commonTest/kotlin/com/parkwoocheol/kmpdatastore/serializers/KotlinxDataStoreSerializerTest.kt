@@ -11,6 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Tests for KotlinxDataStoreSerializer.
@@ -41,10 +42,10 @@ class KotlinxDataStoreSerializerTest {
         val encoded = serializer.encode(user, typeOf<TestUser>())
 
         // Should be valid JSON containing the fields
-        assert(encoded.contains("\"name\""))
-        assert(encoded.contains("\"Bob\""))
-        assert(encoded.contains("\"age\""))
-        assert(encoded.contains("30"))
+        assertTrue(encoded.contains("\"name\""))
+        assertTrue(encoded.contains("\"Bob\""))
+        assertTrue(encoded.contains("\"age\""))
+        assertTrue(encoded.contains("30"))
     }
 
     @Test
@@ -71,11 +72,12 @@ class KotlinxDataStoreSerializerTest {
 
     @Test
     fun `encode and decode complex nested structure`() {
-        val data = ComplexData(
-            id = 123,
-            items = listOf("item1", "item2", "item3"),
-            metadata = mapOf("key1" to "value1", "key2" to "value2")
-        )
+        val data =
+            ComplexData(
+                id = 123,
+                items = listOf("item1", "item2", "item3"),
+                metadata = mapOf("key1" to "value1", "key2" to "value2"),
+            )
         val encoded = serializer.encode(data, typeOf<ComplexData>())
         val decoded = serializer.decode<ComplexData>(encoded, typeOf<ComplexData>())
 
@@ -86,11 +88,12 @@ class KotlinxDataStoreSerializerTest {
 
     @Test
     fun `encode and decode list of objects`() {
-        val users = listOf(
-            TestUser("Alice", 25, "alice@example.com"),
-            TestUser("Bob", 30, "bob@example.com"),
-            TestUser("Charlie", 35, "charlie@example.com")
-        )
+        val users =
+            listOf(
+                TestUser("Alice", 25, "alice@example.com"),
+                TestUser("Bob", 30, "bob@example.com"),
+                TestUser("Charlie", 35, "charlie@example.com"),
+            )
         val encoded = serializer.encode(users, typeOf<List<TestUser>>())
         val decoded = serializer.decode<List<TestUser>>(encoded, typeOf<List<TestUser>>())
 
@@ -169,17 +172,18 @@ class KotlinxDataStoreSerializerTest {
 
     @Test
     fun `custom Json configuration should be respected`() {
-        val customJson = Json {
-            prettyPrint = true
-            ignoreUnknownKeys = true
-        }
+        val customJson =
+            Json {
+                prettyPrint = true
+                ignoreUnknownKeys = true
+            }
         val customSerializer = KotlinxDataStoreSerializer(customJson)
 
         val user = TestUser("Alice", 25, "alice@example.com")
         val encoded = customSerializer.encode(user, typeOf<TestUser>())
 
         // Pretty print should add newlines and indentation
-        assert(encoded.contains("\n"))
+        assertTrue(encoded.contains("\n"))
     }
 
     @Test

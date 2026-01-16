@@ -11,10 +11,17 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
 rootProject.name = "kmp-datastore"
 
-// Library module
+// Library modules
 include(":kmp-datastore")
+include(":kmp-datastore-annotations")
+include(":kmp-datastore-ksp")
 
 // Sample modules
 include(":sample:shared")

@@ -12,6 +12,8 @@
 - **Type-Safe Storage**: easy storage for primitives (`Int`, `String`, `Boolean`, etc.) and fully typesafe object storage.
 - **KType-Based Serialization**: flexible serializer architecture (default `KotlinxDataStoreSerializer` provided).
 - **Unified Query DSL**: simple, powerful queries with `filterByValue<T>` and `queryValues<T>()`.
+- **Annotation System**: `@SafeSerializable`, `@DataStoreKey`, `@RequiresSerializer` and validation annotations.
+- **KSP Code Generation**: Type-safe query builders and validators generated at compile time (optional).
 - **Lightweight**: minimal dependencies, with `kotlinx.serialization` being optional.
 
 ## ✅ Build Requirements
@@ -19,20 +21,6 @@
 - JDK 17+ (required by AGP 8.x)
 - Android SDK for Android sample builds
 - Xcode + Command Line Tools for iOS sample builds
-
-## 🧪 Testing
-
-The library includes a comprehensive test suite with 68+ unit tests covering:
-
-- **Core API Tests**: Primitive and object storage operations
-- **Serialization Tests**: Encoding/decoding with error handling
-- **Query Tests**: Key-based and value-based query operations
-- **Integration Tests**: End-to-end scenarios
-
-Run tests:
-```bash
-./gradlew :kmp-datastore:test
-```
 
 ## 📦 Installation
 
@@ -46,12 +34,35 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+```
 
+### Core Library (Required)
+
+```kotlin
 // build.gradle.kts (commonMain)
-implementation("com.github.parkwoocheol:kmp-datastore:0.1.0")
+implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore:1.0.0")
 
 // Optional: for Kotlinx Serialization support
-implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+```
+
+### Annotations (Optional)
+
+```kotlin
+// For annotation support (runtime validation, @RequiresSerializer warnings)
+implementation("com.github.parkwoocheol.kmp-datastore:kmp-datastore-annotations:1.0.0")
+```
+
+### KSP Code Generation (Optional)
+
+```kotlin
+plugins {
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
+}
+
+dependencies {
+    ksp("com.github.parkwoocheol.kmp-datastore:kmp-datastore-ksp:1.0.0")
+}
 ```
 
 ## 🚀 Quick Start
@@ -96,13 +107,44 @@ objectDataStore.get<UserProfile>("profile").collect { profile ->
 }
 ```
 
-## 📚 Documentation
+## 🏷️ Annotations
 
-For more detailed information, check out the [Documentation](docs/index.md):
+### Quick Wins Annotations
 
-- [**Getting Started**](docs/getting-started.md): Detailed setup and basic usage.
-- [**API Reference**](docs/api/index.md): In-depth API documentation.
-- [**Guides**](docs/guides/index.md): Advanced usage, Query DSL, custom serializers.
+```kotlin
+// Mark a class as safe for serialization with version tracking
+@SafeSerializable(version = 2, description = "User profile data")
+@Serializable
+data class User(
+    @DataStoreKey("user_name", required = true)
+    val name: String,
+    val age: Int
+)
+```
+
+### KSP Code Generation
+
+```kotlin
+// Generate type-safe query builder
+@DataStoreIndex(properties = ["age", "email"])
+@Serializable
+data class User(
+    val name: String,
+    @Min(0) @Max(150) val age: Int,
+    @Pattern("[a-z]+@[a-z]+\\.[a-z]+") val email: String
+)
+
+// Generated usage:
+val adults = dataStore.queryUser()
+    .whereAgeBetween(18, 65)
+    .first()
+
+// Generated validator:
+val result = UserValidator.validate(user)
+if (result.isFailure) {
+    println(result.getErrorMessages())
+}
+```
 
 ## 🔍 Query Examples
 
@@ -127,6 +169,31 @@ dataStore.queryValues<String>()
 ```
 
 Note: Key + value queries scan all keys and load each value. Prefer key-only queries when performance matters.
+
+## 🧪 Testing
+
+The library includes a comprehensive test suite with 68+ unit tests covering:
+
+- **Core API Tests**: Primitive and object storage operations
+- **Serialization Tests**: Encoding/decoding with error handling
+- **Query Tests**: Key-based and value-based query operations
+- **Integration Tests**: End-to-end scenarios
+
+Run tests:
+
+```bash
+./gradlew :kmp-datastore:test
+```
+
+## 📚 Documentation
+
+For more detailed information, check out the [Documentation](docs/index.md):
+
+- [**Getting Started**](docs/getting-started.md): Detailed setup and basic usage.
+- [**API Reference**](docs/api/index.md): In-depth API documentation.
+- [**Guides**](docs/guides/index.md): Advanced usage, Query DSL, custom serializers.
+- [**Annotations Guide**](docs/annotations.md): Annotation system usage.
+- [**KSP Guide**](docs/ksp-guide.md): KSP code generation setup and usage.
 
 ## 🤝 Contributing
 

@@ -1,0 +1,315 @@
+package com.parkwoocheol.kmpdatastore.ksp.generators
+
+import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.KSPLogger
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+
+/**
+ * Generates type-safe query builder classes for classes annotated with @DataStoreIndex.
+ *
+ * For a class like:
+ * ```kotlin
+ * @DataStoreIndex(properties = ["age", "email"])
+ * data class User(val name: String, val age: Int, val email: String)
+ * ```
+ *
+ * Generates:
+ * - `UserQueryBuilder` class with query methods
+ * - `TypeSafeDataStore.queryUser()` extension function
+ */
+class QueryBuilderGenerator(
+    private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger,
+) {
+    companion object {
+        private val TYPE_SAFE_DATA_STORE =
+            ClassName(
+                "com.parkwoocheol.kmpdatastore",
+                "TypeSafeDataStore",
+            )
+        private val FLOW = ClassName("kotlinx.coroutines.flow", "Flow")
+    }
+
+    fun generate(classDecl: KSClassDeclaration) {
+        val className = classDecl.simpleName.asString()
+        val packageName = classDecl.packageName.asString()
+        val builderClassName = "${className}QueryBuilder"
+
+        // Get annotation properties
+        val annotation =
+            classDecl.annotations.find {
+                it.shortName.asString() == "DataStoreIndex"
+            } ?: return
+
+        val propertiesArg =
+            annotation.arguments.find {
+                it.name?.asString() == "properties"
+            }
+
+        @Suppress("UNCHECKED_CAST")
+        val indexedProperties = (propertiesArg?.value as? List<String>) ?: emptyList()
+
+        val generateQueryBuilder =
+            annotation.arguments.find {
+                it.name?.asString() == "generateQueryBuilder"
+            }?.value as? Boolean ?: true
+
+        if (!generateQueryBuilder) {
+            logger.info("Skipping query builder generation for $className (generateQueryBuilder=false)")
+            return
+        }
+
+        // Get property declarations for type information
+        val properties = classDecl.getAllProperties().toList()
+        val indexedPropertyDecls =
+            properties.filter { prop ->
+                indexedProperties.contains(prop.simpleName.asString())
+            }
+
+        // Generate the query builder class
+        val classSpec =
+            TypeSpec.classBuilder(builderClassName)
+                .primaryConstructor(
+                    FunSpec.constructorBuilder()
+                        .addParameter("dataStore", TYPE_SAFE_DATA_STORE)
+                        .build(),
+                )
+                .addProperty(
+                    PropertySpec.builder("dataStore", TYPE_SAFE_DATA_STORE)
+                        .initializer("dataStore")
+                        .addModifiers(KModifier.PRIVATE)
+                        .build(),
+                )
+                .apply {
+                    indexedPropertyDecls.forEach { prop ->
+                        addFunctions(generateQueryMethods(className, packageName, prop))
+                    }
+                }
+                .build()
+
+        // Generate extension function
+        val extensionFunc =
+            FunSpec.builder("query$className")
+                .receiver(TYPE_SAFE_DATA_STORE)
+                .returns(ClassName(packageName, builderClassName))
+                .addStatement("return %T(this)", ClassName(packageName, builderClassName))
+                .addKdoc(
+                    """
+                    Creates a type-safe query builder for [$className].
+                    
+                    Example:
+                    ```kotlin
+                    val results = dataStore.query$className()
+                        .whereAgeEquals(25)
+                        .execute()
+                    ```
+                    
+                    @return A query builder for [$className]
+                    """.trimIndent(),
+                )
+                .build()
+
+        // Build the file
+        val fileSpec =
+            FileSpec.builder(packageName, builderClassName)
+                .addType(classSpec)
+                .addFunction(extensionFunc)
+                .addImport("com.parkwoocheol.kmpdatastore.query", "queryValues")
+                .addFileComment(
+                    """
+                    Generated by KMP DataStore KSP Processor.
+                    Do not modify this file manually.
+                    """.trimIndent(),
+                )
+                .build()
+
+        // Write the file
+        val file =
+            codeGenerator.createNewFile(
+                Dependencies(false, classDecl.containingFile!!),
+                packageName,
+                builderClassName,
+            )
+
+        file.writer().use { writer ->
+            fileSpec.writeTo(writer)
+        }
+
+        logger.info("Generated $builderClassName for $className")
+    }
+
+    private fun generateQueryMethods(
+        className: String,
+        packageName: String,
+        prop: KSPropertyDeclaration,
+    ): List<FunSpec> {
+        val propName = prop.simpleName.asString()
+        val propNameCapitalized = propName.replaceFirstChar { it.uppercase() }
+        val propType = prop.type.resolve()
+        val propTypeName = propType.declaration.simpleName.asString()
+
+        val methods = mutableListOf<FunSpec>()
+
+        // whereXxxEquals method
+        methods.add(
+            FunSpec.builder("where${propNameCapitalized}Equals")
+                .addParameter(ParameterSpec.builder("value", getKotlinType(propTypeName)).build())
+                .returns(
+                    FLOW.parameterizedBy(
+                        ClassName("kotlin.collections", "Map").parameterizedBy(
+                            String::class.asClassName(),
+                            ClassName(packageName, className),
+                        ),
+                    ),
+                )
+                .addStatement(
+                    """
+                    return dataStore.queryValues<%T>()
+                        .filterValue { _: String, obj: %T -> obj.$propName == value }
+                        .executeMap()
+                    """.trimIndent(),
+                    ClassName(packageName, className),
+                    ClassName(packageName, className),
+                )
+                .addKdoc("Filters results where [$propName] equals the given value.")
+                .build(),
+        )
+
+        // Add range methods for numeric types
+        if (isNumericType(propTypeName)) {
+            methods.add(
+                FunSpec.builder("where${propNameCapitalized}Between")
+                    .addParameter("min", getKotlinType(propTypeName))
+                    .addParameter("max", getKotlinType(propTypeName))
+                    .returns(
+                        FLOW.parameterizedBy(
+                            ClassName("kotlin.collections", "Map").parameterizedBy(
+                                String::class.asClassName(),
+                                ClassName(packageName, className),
+                            ),
+                        ),
+                    )
+                    .addStatement(
+                        """
+                        return dataStore.queryValues<%T>()
+                            .filterValue { _: String, obj: %T -> obj.$propName in min..max }
+                            .executeMap()
+                        """.trimIndent(),
+                        ClassName(packageName, className),
+                        ClassName(packageName, className),
+                    )
+                    .addKdoc("Filters results where [$propName] is between [min] and [max] (inclusive).")
+                    .build(),
+            )
+
+            methods.add(
+                FunSpec.builder("where${propNameCapitalized}GreaterThan")
+                    .addParameter("value", getKotlinType(propTypeName))
+                    .returns(
+                        FLOW.parameterizedBy(
+                            ClassName("kotlin.collections", "Map").parameterizedBy(
+                                String::class.asClassName(),
+                                ClassName(packageName, className),
+                            ),
+                        ),
+                    )
+                    .addStatement(
+                        """
+                        return dataStore.queryValues<%T>()
+                            .filterValue { _: String, obj: %T -> obj.$propName > value }
+                            .executeMap()
+                        """.trimIndent(),
+                        ClassName(packageName, className),
+                        ClassName(packageName, className),
+                    )
+                    .addKdoc("Filters results where [$propName] is greater than [value].")
+                    .build(),
+            )
+        }
+
+        // Add string methods for String type
+        if (propTypeName == "String") {
+            methods.add(
+                FunSpec.builder("where${propNameCapitalized}Contains")
+                    .addParameter("value", String::class)
+                    .addParameter(
+                        ParameterSpec.builder("ignoreCase", Boolean::class)
+                            .defaultValue("true")
+                            .build(),
+                    )
+                    .returns(
+                        FLOW.parameterizedBy(
+                            ClassName("kotlin.collections", "Map").parameterizedBy(
+                                String::class.asClassName(),
+                                ClassName(packageName, className),
+                            ),
+                        ),
+                    )
+                    .addStatement(
+                        """
+                        return dataStore.queryValues<%T>()
+                            .filterValue { _: String, obj: %T -> obj.$propName.contains(value, ignoreCase) }
+                            .executeMap()
+                        """.trimIndent(),
+                        ClassName(packageName, className),
+                        ClassName(packageName, className),
+                    )
+                    .addKdoc("Filters results where [$propName] contains the given value.")
+                    .build(),
+            )
+
+            methods.add(
+                FunSpec.builder("where${propNameCapitalized}StartsWith")
+                    .addParameter("prefix", String::class)
+                    .returns(
+                        FLOW.parameterizedBy(
+                            ClassName("kotlin.collections", "Map").parameterizedBy(
+                                String::class.asClassName(),
+                                ClassName(packageName, className),
+                            ),
+                        ),
+                    )
+                    .addStatement(
+                        """
+                        return dataStore.queryValues<%T>()
+                            .filterValue { _: String, obj: %T -> obj.$propName.startsWith(prefix) }
+                            .executeMap()
+                        """.trimIndent(),
+                        ClassName(packageName, className),
+                        ClassName(packageName, className),
+                    )
+                    .addKdoc("Filters results where [$propName] starts with the given prefix.")
+                    .build(),
+            )
+        }
+
+        return methods
+    }
+
+    private fun getKotlinType(typeName: String): ClassName {
+        return when (typeName) {
+            "Int" -> Int::class.asClassName()
+            "Long" -> Long::class.asClassName()
+            "Float" -> Float::class.asClassName()
+            "Double" -> Double::class.asClassName()
+            "Boolean" -> Boolean::class.asClassName()
+            "String" -> String::class.asClassName()
+            else -> ClassName("kotlin", typeName)
+        }
+    }
+
+    private fun isNumericType(typeName: String): Boolean {
+        return typeName in listOf("Int", "Long", "Float", "Double")
+    }
+}

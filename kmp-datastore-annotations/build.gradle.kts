@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kover)
     id("maven-publish")
 }
 
@@ -22,7 +20,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "KmpDataStore"
+            baseName = "KmpDataStoreAnnotations"
             isStatic = true
         }
     }
@@ -32,54 +30,17 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.androidx.datastore)
-            implementation(libs.androidx.datastore.preferences)
-            api(project(":kmp-datastore-annotations"))
+            // No dependencies - pure annotations
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.kotlinx.serialization.json)
-        }
-
-        androidUnitTest.dependencies {
-            implementation(libs.androidx.test.core)
-            implementation(libs.robolectric)
-        }
-
-        androidMain.dependencies {
-            implementation(libs.androidx.core.ktx)
-        }
-
-        iosMain.dependencies {}
-
-        val desktopMain by getting {
-            dependencies {}
-        }
-
-        val desktopTest by getting {
-            dependencies {
-                implementation(libs.junit.jupiter)
-            }
-        }
-    }
-}
-
-kover {
-    reports {
-        filters {
-            excludes {
-                classes("*.platform.*")
-            }
         }
     }
 }
 
 android {
-    namespace = "com.parkwoocheol.kmpdatastore"
+    namespace = "com.parkwoocheol.kmpdatastore.annotations"
     compileSdk = 36
 
     defaultConfig {
@@ -92,18 +53,16 @@ android {
     }
 }
 
-// Publishing configuration for JitPack and GitHub Packages
+// Publishing configuration
 publishing {
     publications {
-        // Kotlin Multiplatform automatically creates publications for each target
-        // We just need to configure the common properties
         withType<MavenPublication> {
             groupId = "com.github.parkwoocheol"
-            version = "0.1.0"
+            version = "1.0.0"
 
             pom {
-                name.set("KMP DataStore")
-                description.set("Type-safe Kotlin Multiplatform DataStore wrapper with BridgeSerializer pattern")
+                name.set("KMP DataStore Annotations")
+                description.set("Annotation definitions for KMP DataStore")
                 url.set("https://github.com/parkwoocheol/kmp-datastore")
 
                 licenses {
@@ -126,18 +85,6 @@ publishing {
                     developerConnection.set("scm:git:ssh://github.com/parkwoocheol/kmp-datastore.git")
                     url.set("https://github.com/parkwoocheol/kmp-datastore")
                 }
-            }
-        }
-    }
-
-    // Optional: GitHub Packages repository
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/parkwoocheol/kmp-datastore")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
