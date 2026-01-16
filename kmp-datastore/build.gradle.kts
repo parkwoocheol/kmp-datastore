@@ -99,7 +99,7 @@ publishing {
         // We just need to configure the common properties
         withType<MavenPublication> {
             groupId = "com.github.parkwoocheol"
-            version = "0.1.0"
+            version = project.version.toString()
 
             pom {
                 name.set("KMP DataStore")
