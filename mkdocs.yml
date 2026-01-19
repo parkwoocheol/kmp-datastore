@@ -37,7 +37,7 @@ markdown_extensions:
   - attr_list
   - md_in_html
 
-net:
+nav:
   - getting-started.md
   - api/index.md
   - guides/index.md
