@@ -13,7 +13,6 @@ plugins {
 // Configuration for JitPack publishing
 // group and version Moved to allprojects block
 
-
 allprojects {
     group = "com.github.parkwoocheol"
     version = System.getenv("KMP_DATASTORE_VERSION") ?: "1.0.0"
