@@ -130,6 +130,4 @@ docs/_build/
 site/
 
 # Project-specific
-.agent/
-.claude/
 DEPLOYMENT.md
