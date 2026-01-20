@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kover)
-    id("maven-publish")
+    alias(libs.plugins.maven.publish)
 }
 
 kotlin {
@@ -92,53 +92,41 @@ android {
     }
 }
 
-// Publishing configuration for JitPack and GitHub Packages
-publishing {
-    publications {
-        // Kotlin Multiplatform automatically creates publications for each target
-        // We just need to configure the common properties
-        withType<MavenPublication> {
-            groupId = "com.github.parkwoocheol"
-            version = project.version.toString()
+// Publishing configuration for Maven Central
+mavenPublishing {
+    publishToMavenCentral("CENTRAL_PORTAL")
 
-            pom {
-                name.set("KMP DataStore")
-                description.set("Type-safe Kotlin Multiplatform DataStore wrapper with BridgeSerializer pattern")
-                url.set("https://github.com/parkwoocheol/kmp-datastore")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("parkwoocheol")
-                        name.set("Woocheol Park")
-                        url.set("https://github.com/parkwoocheol")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/parkwoocheol/kmp-datastore.git")
-                    developerConnection.set("scm:git:ssh://github.com/parkwoocheol/kmp-datastore.git")
-                    url.set("https://github.com/parkwoocheol/kmp-datastore")
-                }
-            }
-        }
+    // Only sign when credentials are available (CI/CD)
+    if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null) {
+        signAllPublications()
     }
 
-    // Optional: GitHub Packages repository
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/parkwoocheol/kmp-datastore")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+    coordinates(group.toString(), "kmp-datastore", version.toString())
+
+    pom {
+        name.set("KMP DataStore")
+        description.set("Type-safe Kotlin Multiplatform DataStore wrapper with BridgeSerializer pattern")
+        url.set("https://github.com/parkwoocheol/kmp-datastore")
+
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
             }
+        }
+
+        developers {
+            developer {
+                id.set("parkwoocheol")
+                name.set("Woocheol Park")
+                url.set("https://github.com/parkwoocheol")
+            }
+        }
+
+        scm {
+            connection.set("scm:git:git://github.com/parkwoocheol/kmp-datastore.git")
+            developerConnection.set("scm:git:ssh://github.com/parkwoocheol/kmp-datastore.git")
+            url.set("https://github.com/parkwoocheol/kmp-datastore")
         }
     }
 }
