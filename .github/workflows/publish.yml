@@ -52,10 +52,6 @@ jobs:
       - name: Run Tests
         run: ./gradlew :kmp-datastore:allTests
 
-      - name: Decode GPG Key
-        run: |
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | base64 --decode > $HOME/secring.gpg
-
       - name: Publish to Maven Central
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -65,9 +61,6 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
           KMP_DATASTORE_VERSION: ${{ steps.version.outputs.VERSION }}
         run: |
-          # Decode base64 GPG key for in-memory signing
-          export ORG_GRADLE_PROJECT_signingInMemoryKey=$(echo "${{ secrets.GPG_SIGNING_KEY }}" | base64 --decode)
-
           if [ "${{ github.event.inputs.autoRelease }}" == "true" ]; then
             ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
           else
