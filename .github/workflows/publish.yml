@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: Publish to Maven Central
 
 on:
   workflow_dispatch:
@@ -7,12 +7,16 @@ on:
         description: 'Version to publish (e.g., 1.5.1)'
         required: true
         type: string
+      autoRelease:
+        description: 'Automatically release to Maven Central (skip manual approval)'
+        required: false
+        type: boolean
+        default: false
   release:
     types: [created]
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   publish:
@@ -45,13 +49,31 @@ jobs:
       - name: Check Code Style (Spotless)
         run: ./gradlew spotlessCheck
 
-      - name: Publish to GitHub Packages
+      - name: Run Tests
+        run: ./gradlew :kmp-datastore:allTests
+
+      - name: Publish to Maven Central
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
           KMP_DATASTORE_VERSION: ${{ steps.version.outputs.VERSION }}
-        run: ./gradlew publish
+        run: |
+          if [ "${{ github.event.inputs.autoRelease }}" == "true" ]; then
+            ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+          else
+            ./gradlew publishToMavenCentral --no-configuration-cache
+          fi
 
       - name: Summary
         run: |
-          echo "✅ Published version ${{ steps.version.outputs.VERSION }} to GitHub Packages" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event.inputs.autoRelease }}" == "true" ]; then
+            echo "✅ Published and released version ${{ steps.version.outputs.VERSION }} to Maven Central" >> $GITHUB_STEP_SUMMARY
+            echo "🔍 Artifacts will be available on Maven Central in ~2 hours" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Published version ${{ steps.version.outputs.VERSION }} to Maven Central Portal" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️  Manual approval required: Log in to https://central.sonatype.com/ to release" >> $GITHUB_STEP_SUMMARY
+            echo "🔍 After approval, artifacts will be available on Maven Central in ~2 hours" >> $GITHUB_STEP_SUMMARY
+          fi

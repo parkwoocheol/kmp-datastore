@@ -7,14 +7,14 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.compose.multiplatform) apply false
     alias(libs.plugins.spotless)
+    alias(libs.plugins.maven.publish) apply false
 }
 
-// Configuration for JitPack publishing
-// Configuration for JitPack publishing
-// group and version Moved to allprojects block
+// Configuration for Maven Central publishing
+// group and version applied to all subprojects
 
 allprojects {
-    group = "com.github.parkwoocheol"
+    group = "io.github.parkwoocheol"
     version = System.getenv("KMP_DATASTORE_VERSION") ?: "1.0.0"
 
     apply(plugin = "com.diffplug.spotless")

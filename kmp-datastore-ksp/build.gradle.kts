@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("maven-publish")
+    alias(libs.plugins.maven.publish)
 }
 
 java {
@@ -21,40 +21,41 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.github.parkwoocheol"
-            artifactId = "kmp-datastore-ksp"
-            version = project.version.toString()
-            from(components["java"])
+// Publishing configuration for Maven Central
+mavenPublishing {
+    publishToMavenCentral("CENTRAL_PORTAL")
 
-            pom {
-                name.set("KMP DataStore KSP Processor")
-                description.set("KSP processor for generating type-safe query builders and validators")
-                url.set("https://github.com/parkwoocheol/kmp-datastore")
+    // Only sign when credentials are available (CI/CD)
+    if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null) {
+        signAllPublications()
+    }
 
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
+    coordinates(group.toString(), "kmp-datastore-ksp", version.toString())
 
-                developers {
-                    developer {
-                        id.set("parkwoocheol")
-                        name.set("Woocheol Park")
-                        url.set("https://github.com/parkwoocheol")
-                    }
-                }
+    pom {
+        name.set("KMP DataStore KSP Processor")
+        description.set("KSP processor for generating type-safe query builders and validators")
+        url.set("https://github.com/parkwoocheol/kmp-datastore")
 
-                scm {
-                    connection.set("scm:git:git://github.com/parkwoocheol/kmp-datastore.git")
-                    developerConnection.set("scm:git:ssh://github.com/parkwoocheol/kmp-datastore.git")
-                    url.set("https://github.com/parkwoocheol/kmp-datastore")
-                }
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
             }
+        }
+
+        developers {
+            developer {
+                id.set("parkwoocheol")
+                name.set("Woocheol Park")
+                url.set("https://github.com/parkwoocheol")
+            }
+        }
+
+        scm {
+            connection.set("scm:git:git://github.com/parkwoocheol/kmp-datastore.git")
+            developerConnection.set("scm:git:ssh://github.com/parkwoocheol/kmp-datastore.git")
+            url.set("https://github.com/parkwoocheol/kmp-datastore")
         }
     }
 }
