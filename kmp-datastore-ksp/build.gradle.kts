@@ -23,12 +23,10 @@ dependencies {
 
 // Publishing configuration for Maven Central
 mavenPublishing {
-    publishToMavenCentral("CENTRAL_PORTAL")
+    publishToMavenCentral()
 
     // Only sign when credentials are available (CI/CD)
-    if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null) {
-        signAllPublications()
-    }
+    signAllPublications()
 
     coordinates(group.toString(), "kmp-datastore-ksp", version.toString())
 
