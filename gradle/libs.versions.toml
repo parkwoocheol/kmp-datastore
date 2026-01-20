@@ -18,7 +18,7 @@ robolectric = "4.11.1"
 junit5 = "5.10.1"
 ksp = "2.2.0-2.0.2"
 kotlinpoet = "1.18.1"
-mavenPublish = "0.30.0"
+mavenPublish = "0.34.0"
 
 [libraries]
 # Android
