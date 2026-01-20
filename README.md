@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.parkwoocheol:kmp-datastore:1.0.0")
+            implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 
             // Optional: for Kotlinx Serialization support
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
@@ -51,7 +51,7 @@ kotlin {
 
 // build.gradle.kts (for Android/JVM)
 dependencies {
-    implementation("io.github.parkwoocheol:kmp-datastore:1.0.0")
+    implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 }
 ```
 
@@ -61,7 +61,7 @@ For modern projects using Gradle version catalogs:
 
 ```toml
 [versions]
-kmpDatastore = "1.0.0"
+kmpDatastore = "<version>"
 
 [libraries]
 kmp-datastore = { module = "io.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
@@ -81,7 +81,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("io.github.parkwoocheol:kmp-datastore-annotations:1.0.0")
+    implementation("io.github.parkwoocheol:kmp-datastore-annotations:<version>")
 }
 ```
 
@@ -93,7 +93,7 @@ plugins {
 }
 
 dependencies {
-    ksp("io.github.parkwoocheol:kmp-datastore-ksp:1.0.0")
+    ksp("io.github.parkwoocheol:kmp-datastore-ksp:<version>")
 }
 ```
 
