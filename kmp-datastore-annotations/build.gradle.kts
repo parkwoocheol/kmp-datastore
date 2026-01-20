@@ -58,7 +58,9 @@ mavenPublishing {
     publishToMavenCentral()
 
     // Only sign when credentials are available (CI/CD)
-    signAllPublications()
+    if (project.hasProperty("signingInMemoryKey")) {
+        signAllPublications()
+    }
 
     coordinates(group.toString(), "kmp-datastore-annotations", version.toString())
 
