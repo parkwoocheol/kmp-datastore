@@ -8,7 +8,7 @@
 
 ## Installation
 
-This library is available via **JitPack** (for Android/Desktop) and **GitHub Packages** (for iOS/multiplatform).
+This library is available on **Maven Central**.
 
 ### Method 1: Basic Setup (Groovy/Kotlin DSL)
 
@@ -16,19 +16,19 @@ Use the `<version>` placeholder with the latest release version (e.g. `1.0.0`). 
 
 #### Core Library (Required)
 
-Add the repository and dependency:
+No special repository configuration is needed if you already have `mavenCentral()`.
 
 ```kotlin
 // settings.gradle.kts
 dependencyResolutionManagement {
     repositories {
-        maven { url = uri("https://jitpack.io") }
+        google()
         mavenCentral()
     }
 }
 
 // build.gradle.kts (commonMain)
-implementation("com.github.parkwoocheol:kmp-datastore:<version>")
+implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 
 // Optional: for Kotlinx Serialization support
 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
@@ -43,35 +43,15 @@ For modern projects, add the following to your `libs.versions.toml`:
 kmpDatastore = "<version>" # e.g. 1.0.0
 
 [libraries]
-kmp-datastore = { module = "com.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
-kmp-datastore-annotations = { module = "com.github.parkwoocheol:kmp-datastore-annotations", version.ref = "kmpDatastore" }
-kmp-datastore-ksp = { module = "com.github.parkwoocheol:kmp-datastore-ksp", version.ref = "kmpDatastore" }
+kmp-datastore = { module = "io.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
+kmp-datastore-annotations = { module = "io.github.parkwoocheol:kmp-datastore-annotations", version.ref = "kmpDatastore" }
+kmp-datastore-ksp = { module = "io.github.parkwoocheol:kmp-datastore-ksp", version.ref = "kmpDatastore" }
 ```
 
 Then use it in your `build.gradle.kts`:
 
 ```kotlin
 implementation(libs.kmp.datastore)
-```
-
-### iOS Setup (GitHub Packages)
-
-For iOS targets (or if JitPack causes issues), usage of **GitHub Packages** is recommended.
-
-1. Create a Personal Access Token (PAT) with `read:packages` scope on GitHub.
-2. Add the following to your `settings.gradle.kts` (or `~/.gradle/gradle.properties`):
-
-```kotlin
-// settings.gradle.kts
-repositories {
-    maven {
-        url = uri("https://maven.pkg.github.com/parkwoocheol/kmp-datastore")
-        credentials {
-            username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
-            password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
-}
 ```
 
 ---

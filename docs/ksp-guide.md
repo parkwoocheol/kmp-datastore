@@ -18,10 +18,10 @@ plugins {
 ```kotlin
 dependencies {
     // Annotations module (required for KSP)
-    implementation("com.github.parkwoocheol:kmp-datastore-annotations:<version>")
+    implementation("io.github.parkwoocheol:kmp-datastore-annotations:<version>")
     
     // KSP processor
-    ksp("com.github.parkwoocheol:kmp-datastore-ksp:<version>")
+    ksp("io.github.parkwoocheol:kmp-datastore-ksp:<version>")
 }
 ```
 
