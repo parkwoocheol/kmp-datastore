@@ -30,8 +30,8 @@ dependencyResolutionManagement {
 // build.gradle.kts (commonMain)
 implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 
-// Optional: for Kotlinx Serialization support
-implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+// Optional: Kotlinx serializer module
+implementation("io.github.parkwoocheol:kmp-datastore-serializer-kotlinx:<version>")
 ```
 
 ### Method 2: Version Catalog (libs.versions.toml)
@@ -46,6 +46,7 @@ kmpDatastore = "<version>" # e.g. 1.0.0
 kmp-datastore = { module = "io.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
 kmp-datastore-annotations = { module = "io.github.parkwoocheol:kmp-datastore-annotations", version.ref = "kmpDatastore" }
 kmp-datastore-ksp = { module = "io.github.parkwoocheol:kmp-datastore-ksp", version.ref = "kmpDatastore" }
+kmp-datastore-serializer-kotlinx = { module = "io.github.parkwoocheol:kmp-datastore-serializer-kotlinx", version.ref = "kmpDatastore" }
 ```
 
 Then use it in your `build.gradle.kts`:
@@ -99,7 +100,7 @@ No setup required! DataStore uses file-based storage in `~/.config/{app}/datasto
 val dataStore = TypeSafeDataStore("user_preferences")
 
 // For object storage (with optional serializer)
-val serializer = KotlinxDataStoreSerializer()
+val serializer = KotlinxDataStoreSerializer() // from kmp-datastore-serializer-kotlinx
 val objectStore = TypeSafeDataStore("app_data", serializer)
 ```
 
@@ -144,7 +145,7 @@ data class User(
 )
 
 // With serializer
-val serializer = KotlinxDataStoreSerializer()
+val serializer = KotlinxDataStoreSerializer() // from kmp-datastore-serializer-kotlinx
 val dataStore = TypeSafeDataStore("app_data", serializer)
 
 // Store object

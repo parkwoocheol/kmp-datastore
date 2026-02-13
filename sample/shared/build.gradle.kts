@@ -31,12 +31,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":kmp-datastore"))
+            implementation(project(":kmp-datastore-serializer-kotlinx"))
             implementation(project(":kmp-datastore-annotations"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            implementation(libs.kotlinx.serialization.json)
         }
 
         androidMain.dependencies {

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kover)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.maven.publish)
 }
 
@@ -14,69 +14,33 @@ kotlin {
         }
     }
 
-    // iOS targets
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "KmpDataStore"
+            baseName = "KmpDataStoreSerializerKotlinx"
             isStatic = true
         }
     }
 
-    // JVM (Desktop) target
     jvm("desktop")
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.androidx.datastore)
-            implementation(libs.androidx.datastore.preferences)
-            api(project(":kmp-datastore-annotations"))
+            api(project(":kmp-datastore"))
+            implementation(libs.kotlinx.serialization.json)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(libs.kotlinx.coroutines.test)
-        }
-
-        androidUnitTest.dependencies {
-            implementation(libs.androidx.test.core)
-            implementation(libs.robolectric)
-        }
-
-        androidMain.dependencies {
-            implementation(libs.androidx.core.ktx)
-        }
-
-        iosMain.dependencies {}
-
-        val desktopMain by getting {
-            dependencies {}
-        }
-
-        val desktopTest by getting {
-            dependencies {
-                implementation(libs.junit.jupiter)
-            }
-        }
-    }
-}
-
-kover {
-    reports {
-        filters {
-            excludes {
-                classes("*.platform.*")
-            }
         }
     }
 }
 
 android {
-    namespace = "com.parkwoocheol.kmpdatastore"
+    namespace = "com.parkwoocheol.kmpdatastore.serializer.kotlinx"
     compileSdk = 36
 
     defaultConfig {
@@ -89,20 +53,18 @@ android {
     }
 }
 
-// Publishing configuration for Maven Central
 mavenPublishing {
     publishToMavenCentral()
 
-    // Only sign when credentials are available (CI/CD)
     if (project.hasProperty("signingInMemoryKey")) {
         signAllPublications()
     }
 
-    coordinates(group.toString(), "kmp-datastore", version.toString())
+    coordinates(group.toString(), "kmp-datastore-serializer-kotlinx", version.toString())
 
     pom {
-        name.set("KMP DataStore")
-        description.set("Type-safe Kotlin Multiplatform DataStore wrapper with BridgeSerializer pattern")
+        name.set("KMP DataStore Kotlinx Serializer")
+        description.set("Optional Kotlinx Serialization module for KMP DataStore")
         url.set("https://github.com/parkwoocheol/kmp-datastore")
 
         licenses {

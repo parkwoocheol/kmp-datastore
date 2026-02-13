@@ -1,9 +1,7 @@
 package com.parkwoocheol.kmpdatastore.serializers
 
 import com.parkwoocheol.kmpdatastore.SerializationException
-import com.parkwoocheol.kmpdatastore.fixtures.ComplexData
-import com.parkwoocheol.kmpdatastore.fixtures.TestSettings
-import com.parkwoocheol.kmpdatastore.fixtures.TestUser
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 import kotlin.test.BeforeTest
@@ -196,3 +194,25 @@ class KotlinxDataStoreSerializerTest {
         assertEquals(25, decoded.age)
     }
 }
+
+
+@Serializable
+private data class TestUser(
+    val name: String,
+    val age: Int,
+    val email: String,
+)
+
+@Serializable
+private data class TestSettings(
+    val theme: String,
+    val notifications: Boolean,
+    val language: String = "en",
+)
+
+@Serializable
+private data class ComplexData(
+    val id: Int,
+    val items: List<String>,
+    val metadata: Map<String, String>,
+)

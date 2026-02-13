@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Split `KotlinxDataStoreSerializer` out of `kmp-datastore` into a new optional module: `kmp-datastore-serializer-kotlinx`.
+- `kmp-datastore` core now keeps only serializer abstractions (`DataStoreSerializer` / `SerializationException`) and no longer has a direct `kotlinx-serialization-json` dependency in `commonMain`.
+- Updated installation and quick-start docs to reflect module-based serializer setup and optional dependency policy.
+
 ## [1.0.0] - 2026-01-16
 
 This is the first production-ready release of KMP DataStore with full annotation support and KSP code generation.

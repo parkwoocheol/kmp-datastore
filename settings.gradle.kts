@@ -22,6 +22,7 @@ rootProject.name = "kmp-datastore"
 include(":kmp-datastore")
 include(":kmp-datastore-annotations")
 include(":kmp-datastore-ksp")
+include(":kmp-datastore-serializer-kotlinx")
 
 // Sample modules
 include(":sample:shared")

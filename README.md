@@ -10,7 +10,7 @@
 
 - **Multiplatform Support**: seamless support for Android, iOS, and Desktop (JVM).
 - **Type-Safe Storage**: easy storage for primitives (`Int`, `String`, `Boolean`, etc.) and fully typesafe object storage.
-- **KType-Based Serialization**: flexible serializer architecture (default `KotlinxDataStoreSerializer` provided).
+- **KType-Based Serialization**: serializer interface in core + optional Kotlinx serializer module (`kmp-datastore-serializer-kotlinx`).
 - **Unified Query DSL**: simple, powerful queries with `filterByValue<T>` and `queryValues<T>()`.
 - **Annotation System**: `@SafeSerializable`, `@DataStoreKey`, `@RequiresSerializer` and validation annotations.
 - **KSP Code Generation**: Type-safe query builders and validators generated at compile time (optional).
@@ -43,8 +43,8 @@ kotlin {
         commonMain.dependencies {
             implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 
-            // Optional: for Kotlinx Serialization support
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+            // Optional: Kotlinx serializer module
+            implementation("io.github.parkwoocheol:kmp-datastore-serializer-kotlinx:<version>")
         }
     }
 }
@@ -67,6 +67,7 @@ kmpDatastore = "<version>"
 kmp-datastore = { module = "io.github.parkwoocheol:kmp-datastore", version.ref = "kmpDatastore" }
 kmp-datastore-annotations = { module = "io.github.parkwoocheol:kmp-datastore-annotations", version.ref = "kmpDatastore" }
 kmp-datastore-ksp = { module = "io.github.parkwoocheol:kmp-datastore-ksp", version.ref = "kmpDatastore" }
+kmp-datastore-serializer-kotlinx = { module = "io.github.parkwoocheol:kmp-datastore-serializer-kotlinx", version.ref = "kmpDatastore" }
 ```
 
 Then use it in your `build.gradle.kts`:
@@ -82,6 +83,14 @@ dependencies {
 ```kotlin
 dependencies {
     implementation("io.github.parkwoocheol:kmp-datastore-annotations:<version>")
+}
+```
+
+### Kotlinx Serializer Module (Optional)
+
+```kotlin
+dependencies {
+    implementation("io.github.parkwoocheol:kmp-datastore-serializer-kotlinx:<version>")
 }
 ```
 
@@ -107,7 +116,7 @@ dependencies {
 val dataStore = TypeSafeDataStore("user_prefs")
 
 // For object support with Kotlinx Serialization:
-val serializer = KotlinxDataStoreSerializer()
+val serializer = KotlinxDataStoreSerializer() // from kmp-datastore-serializer-kotlinx
 val objectDataStore = TypeSafeDataStore("app_data", serializer)
 ```
 
