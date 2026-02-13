@@ -66,7 +66,7 @@ mavenPublishing {
 
     pom {
         name.set("KMP DataStore Annotations")
-        description.set("Annotation definitions for KMP DataStore")
+        description.set("Annotation APIs for KMP DataStore models and validation metadata")
         url.set("https://github.com/parkwoocheol/kmp-datastore")
 
         licenses {

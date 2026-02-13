@@ -7,7 +7,8 @@ KMP DataStore is a Kotlin Multiplatform library that wraps Jetpack DataStore to 
 - **Multiplatform Support**: Android, iOS, and Desktop (JVM).
 - **Type-Safe**: Supports primitive types and custom objects using `KType`-based serialization.
 - **Unified Query DSL**: Filter and search data easily with `filterByValue<T>` and `queryValues<T>()`.
-- **Easy Integration**: Simple setup and usage.
+- **Built-in Kotlinx Serializer**: `kmp-datastore` includes `KotlinxDataStoreSerializer` out of the box.
+- **Modular Add-ons**: annotations are packaged separately, KSP processor is optional.
 
 ## Documentation
 

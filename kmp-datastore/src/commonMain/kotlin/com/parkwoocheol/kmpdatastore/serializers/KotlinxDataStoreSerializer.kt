@@ -9,8 +9,8 @@ import kotlin.reflect.KType
 /**
  * DataStoreSerializer implementation using Kotlinx Serialization.
  *
- * This is an optional implementation that requires kotlinx-serialization-json dependency.
- * If you don't want to use kotlinx.serialization, you can implement your own DataStoreSerializer.
+ * Built-in DataStoreSerializer implementation based on kotlinx.serialization Json.
+ * You can still provide your own DataStoreSerializer when you need a different format.
  *
  * Usage:
  * ```

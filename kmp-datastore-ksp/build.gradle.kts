@@ -34,7 +34,7 @@ mavenPublishing {
 
     pom {
         name.set("KMP DataStore KSP Processor")
-        description.set("KSP processor for generating type-safe query builders and validators")
+        description.set("Optional KSP processor for generating KMP DataStore query builders, schemas, and validators")
         url.set("https://github.com/parkwoocheol/kmp-datastore")
 
         licenses {

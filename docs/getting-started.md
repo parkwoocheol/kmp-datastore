@@ -30,9 +30,13 @@ dependencyResolutionManagement {
 // build.gradle.kts (commonMain)
 implementation("io.github.parkwoocheol:kmp-datastore:<version>")
 
-// Optional: for Kotlinx Serialization support
-implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 ```
+
+### Artifact Overview
+
+- `kmp-datastore` (**required**): core runtime, Query DSL, and built-in `KotlinxDataStoreSerializer`.
+- `kmp-datastore-annotations` (**included transitively** with `kmp-datastore`, or add directly): annotation APIs.
+- `kmp-datastore-ksp` (**optional**): KSP processor for generated query builders, schemas, and validators.
 
 ### Method 2: Version Catalog (libs.versions.toml)
 
@@ -98,7 +102,7 @@ No setup required! DataStore uses file-based storage in `~/.config/{app}/datasto
 // For primitive types only (no serializer needed)
 val dataStore = TypeSafeDataStore("user_preferences")
 
-// For object storage (with optional serializer)
+// For object storage (serializer required)
 val serializer = KotlinxDataStoreSerializer()
 val objectStore = TypeSafeDataStore("app_data", serializer)
 ```

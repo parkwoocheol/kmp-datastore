@@ -33,6 +33,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
+            // Required because KotlinxDataStoreSerializer is shipped in this artifact.
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
@@ -105,7 +106,7 @@ mavenPublishing {
 
     pom {
         name.set("KMP DataStore")
-        description.set("Type-safe Kotlin Multiplatform DataStore wrapper with BridgeSerializer pattern")
+        description.set("Core runtime for type-safe Kotlin Multiplatform DataStore, including KotlinxDataStoreSerializer")
         url.set("https://github.com/parkwoocheol/kmp-datastore")
 
         licenses {

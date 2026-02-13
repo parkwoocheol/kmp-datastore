@@ -14,7 +14,7 @@
 - **Unified Query DSL**: simple, powerful queries with `filterByValue<T>` and `queryValues<T>()`.
 - **Annotation System**: `@SafeSerializable`, `@DataStoreKey`, `@RequiresSerializer` and validation annotations.
 - **KSP Code Generation**: Type-safe query builders and validators generated at compile time (optional).
-- **Lightweight**: minimal dependencies, with `kotlinx.serialization` being optional.
+- **Batteries Included**: core artifact includes `KotlinxDataStoreSerializer` and required JSON runtime.
 
 ## ✅ Build Requirements
 
@@ -42,9 +42,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.parkwoocheol:kmp-datastore:<version>")
-
-            // Optional: for Kotlinx Serialization support
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         }
     }
 }
@@ -96,6 +93,12 @@ dependencies {
     ksp("io.github.parkwoocheol:kmp-datastore-ksp:<version>")
 }
 ```
+
+### Artifact Roles
+
+- `kmp-datastore` (**required**): core runtime, Query DSL, and built-in `KotlinxDataStoreSerializer`.
+- `kmp-datastore-annotations` (**included transitively** from `kmp-datastore`, can be added directly when needed): annotation APIs.
+- `kmp-datastore-ksp` (**optional**): KSP processor for generated query builders and validators.
 
 ## 🚀 Quick Start
 
